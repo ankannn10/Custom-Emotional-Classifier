@@ -1,0 +1,25 @@
+# Core Libraries
+pandas==2.0.3
+numpy==1.25.2
+argparse==1.4.0
+tqdm==4.66.1
+
+# Web Scraping
+selenium==4.15.2
+webdriver-manager==4.0.1
+youtube-comment-downloader==0.1.6
+
+# NLP and Transformers
+transformers==4.33.2
+sentence-transformers==2.2.2
+torch==2.0.1
+torchvision==0.15.2
+
+# Text Processing
+emoji==2.8.0
+
+# Visualization
+graphviz==0.20.1
+
+# Optional Utilities
+scipy==1.11.2
