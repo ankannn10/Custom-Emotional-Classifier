@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Analysis Results</title>
+  <!-- Bootstrap 5 CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+  />
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    h1, h2 {
+      margin-top: 1.5rem;
+    }
+    .table thead th {
+      background-color: #e9ecef; /* Slightly gray header */
+    }
+    .tag-badge {
+      background-color: #e2e3e5;
+      margin-right: 5px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    .analyze-again-btn {
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">YouTube Emotion Analysis</a>
+    </div>
+  </nav>
+
+  <div class="container my-4">
+    <h1 class="text-center mb-4">Video Emotion Analysis</h1>
+    
+    <!-- Video Engagement & Metadata -->
+    <div class="card mb-4 shadow">
+      <div class="card-body">
+        <h2 class="h4">Video Engagement &amp; Metadata</h2>
+        <p><strong>Title:</strong> {{ video_title }}</p>
+        <p>
+          <strong>Video Link:</strong>
+          <a href="{{ video_link }}" target="_blank">{{ video_link }}</a>
+        </p>
+        <p><strong>Channel Name:</strong> {{ channel_name }}</p>
+        <p><strong>Upload Date:</strong> {{ upload_date }}</p>
+        <p><strong>Tags:</strong>
+          {% for tag in tags %}
+            <span class="tag-badge">{{ tag }}</span>
+          {% endfor %}
+        </p>
+
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Value (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Likes vs Views</td>
+                <td>{{ likes_to_views_perc }}</td>
+              </tr>
+              <tr>
+                <td>Comments vs Views</td>
+                <td>{{ comments_to_views_perc }}</td>
+              </tr>
+              <tr>
+                <td>Views vs Subscribers</td>
+                <td>{{ views_to_subs_perc }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overall Video Summary -->
+    <div class="card mb-4 shadow">
+      <div class="card-body">
+        <h2 class="h4">Overall Video Summary</h2>
+        {% if video_summary %}
+          <p>{{ video_summary }}</p>
+        {% else %}
+          <p><em>No summary available</em></p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Comment-based Emotions -->
+    <div class="card mb-4 shadow">
+      <div class="card-body">
+        <h2 class="h4">Comment-Level Emotions</h2>
+        {% if report_data and report_data|length > 0 %}
+          <div class="table-responsive">
+            <table class="table table-striped table-bordered align-middle">
+              <thead>
+                <tr>
+                  <th>Comment</th>
+                  <th>Top Emotion</th>
+                  <th>Confidence</th>
+                  <th>Sentiment</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in report_data %}
+                  <tr>
+                    <td>{{ row.comment }}</td>
+                    <td>{{ row.comment_emotion1 }}</td>
+                    <td>{{ row.comment_conf1 | round(3) }}</td>
+                    <td>{{ row.sentiment }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p>No comment data to display.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Overall Public Opinion -->
+    <div class="card mb-4 shadow">
+      <div class="card-body">
+        <h2 class="h4">Overall Public Opinion</h2>
+        <p>
+          <strong>Overall Sentiment:</strong> {{ overall_sentiment }}<br />
+          <strong>Overall Emotion:</strong> {{ overall_emotion }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Button: Analyze Another Video -->
+    <div class="text-center analyze-again-btn">
+      <a href="/" class="btn btn-secondary btn-lg">
+        Analyze Another Video
+      </a>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS (optional, for interactive components) -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+  ></script>
+</body>
+</html>
