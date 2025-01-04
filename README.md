@@ -141,7 +141,7 @@ This project is licensed under the **MIT License**.
 
 ## 📧 Contact
 For inquiries or feedback:
-- **Email:** your-email@example.com
+- **Email:** ankan10.edu@gmail.com
 - **GitHub:** [Ankan](https://github.com/ankannn10)
 
 ---
