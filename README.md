@@ -55,11 +55,11 @@ The emotion classification model is built on a fine-tuned **DistilRoBERTa** arch
 ![Model Architecture](/static/emotion_model_architecture.png)
 ### Metrics
 **Test Results:**
-- **Test Loss:** 0.1043
-- **Test Accuracy:** 0.9426
-- **Precision:** 0.9515
-- **Recall:** 0.9426
-- **F1-Score:** 0.9445
+- **Test Loss:** 0.1021
+- **Test Accuracy:** 0.9428
+- **Precision:** 0.9520
+- **Recall:** 0.9428
+- **F1-Score:** 0.9444
 
 **Classification Report:**
 ```
@@ -68,12 +68,12 @@ The emotion classification model is built on a fine-tuned **DistilRoBERTa** arch
      sadness       1.00      0.95      0.98     18178
          joy       1.00      0.92      0.96     21160
         love       0.77      1.00      0.87      5183
-       anger       0.94      0.96      0.95      8598
-        fear       0.90      0.92      0.91      7157
+       anger       0.91      1.00      0.95      8598
+        fear       0.94      0.87      0.90      7157
     surprise       0.75      1.00      0.86      2246
 
     accuracy                           0.94     62522
-   macro avg       0.89      0.96      0.92     62522
+   macro avg       0.90      0.96      0.92     62522
 weighted avg       0.95      0.94      0.94     62522
 ```
 
