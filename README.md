@@ -52,7 +52,7 @@ The emotion classification model is built on a fine-tuned **DistilRoBERTa** arch
 6. **Softmax Activation (Emotion Probabilities)**
 7. **Top-3 Emotions with Confidence Scores**
 
-![Model Architecture](emotion_model_architecture.png)
+![Model Architecture](/static/emotion_model_architecture.png)
 ### Metrics
 **Test Results:**
 - **Test Loss:** 0.1043
