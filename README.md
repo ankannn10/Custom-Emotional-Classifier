@@ -42,7 +42,8 @@ YouTube Emotion Analysis is a comprehensive pipeline designed to extract, proces
 
 ## 🧠 Model Architecture
 The emotion classification model is built on a fine-tuned **DistilRoBERTa** architecture with an attention mechanism and Mish activation function.
-
+### Dataset Used
+dair-ai/emotion dataset : https://huggingface.co/datasets/dair-ai/emotion/viewer
 ### 📊 **Model Workflow**
 1. **Input Text (Tokenized)**
 2. **Pre-trained RoBERTa (Hidden States)**
