@@ -56,26 +56,26 @@ dair-ai/emotion dataset : https://huggingface.co/datasets/dair-ai/emotion/viewer
 ![Model Architecture](/static/emo_model_architecture_v2.png)
 ### Metrics
 **Test Results:**
-- **Test Loss:** 0.1021
-- **Test Accuracy:** 0.9428
-- **Precision:** 0.9520
-- **Recall:** 0.9428
-- **F1-Score:** 0.9444
+- **Test Loss:** 0.1349
+- **Test Accuracy:** 0.9510
+- **Precision:** 0.9525
+- **Recall:** 0.9510
+- **F1-Score:** 0.9508
 
 **Classification Report:**
 ```
                precision    recall  f1-score   support
 
-     sadness       1.00      0.95      0.98     18178
-         joy       1.00      0.92      0.96     21160
-        love       0.77      1.00      0.87      5183
-       anger       0.91      1.00      0.95      8598
-        fear       0.94      0.87      0.90      7157
-    surprise       0.75      1.00      0.86      2246
+     sadness       0.98      0.95      0.97      2244
+         joy       0.99      0.91      0.95      2244
+        love       0.93      0.99      0.96      2244
+       anger       0.95      0.96      0.95      2244
+        fear       0.95      0.90      0.93      2244
+    surprise       0.92      1.00      0.96      2246
 
-    accuracy                           0.94     62522
-   macro avg       0.90      0.96      0.92     62522
-weighted avg       0.95      0.94      0.94     62522
+    accuracy                           0.95     13464
+   macro avg       0.95      0.95      0.95     13464
+weighted avg       0.95      0.95      0.95     13464
 ```
 
 ## 📦 Installation
