@@ -29,13 +29,14 @@ def load_model(model_path, device):
             super().__init__()
             self.base_model = base_model
             self.classifier = torch.nn.Sequential(
-                torch.nn.Dropout(0.1),
+                torch.nn.Dropout(0.2),
                 torch.nn.Linear(768, 768),
                 Mish(), 
-                torch.nn.Dropout(0.1),
-                torch.nn.Linear(768, n_classes)
+                torch.nn.Dropout(0.2),
+                torch.nn.Linear(768, n_classes),
             )
             self.attention_weights = torch.nn.Linear(768, 1)  # Attention score per token
+            self.layer_norm = nn.LayerNorm(768)  # Attention score per token
 
         def forward(self, input_ids, attention_mask):
             outputs = self.base_model(input_ids=input_ids, attention_mask=attention_mask)
@@ -48,6 +49,8 @@ def load_model(model_path, device):
             
             # Weighted average of token embeddings
             pooled_output = torch.sum(hidden_states * attention_weights.unsqueeze(-1), dim=1)
+            # Normalization of pooled output
+            pooled_output = self.layer_norm(pooled_output)  #Layer Normalization
             
             return self.classifier(pooled_output)
     
