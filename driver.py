@@ -114,7 +114,7 @@ def main(url, output_dir, cleanup=False):
         # Step 4: Run Emotion Inference
         print("\n🤖 Step 4: Running Emotion Inference...")
         inference_output = os.path.join(output_dir, "emotion_predictions.csv")
-        run_inference(paired_output, inference_output, model_path='ai_emotion_classification_model.pth')
+        run_inference(paired_output, inference_output, model_path='balancedai_emotion_classification_model.pth')
         
         # Step 5: Calculate CES and WRS
         print("\n📊 Step 5: Calculating CES and WRS...")
