@@ -1,0 +1,50 @@
+/* ---------------------------
+   Global Theme Overrides
+--------------------------- */
+body {
+  background-color: #f9f9fb;
+  color: #333;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-brand {
+  font-size: 1.4rem;
+}
+
+footer p {
+  font-size: 0.9rem;
+}
+
+/* ---------------------------
+   Emotion-based Row Colors
+--------------------------- */
+.emotion-joy {
+  background-color: #FFF9C4 !important; /* pastel yellow */
+}
+
+.emotion-anger {
+  background-color: #FFEBEE !important; /* pastel red */
+}
+
+.emotion-sadness {
+  background-color: #E3F2FD !important; /* pastel blue */
+}
+
+.emotion-fear {
+  background-color: #EDE7F6 !important; /* pastel purple */
+}
+
+.emotion-surprise {
+  background-color: #FFE0B2 !important; /* pastel orange */
+}
+
+.emotion-love {
+  background-color: #FCE4EC !important; /* pastel pink */
+}
+
+/* Default/fallback for unrecognized emotions */
+.emotion-default {
+  background-color: #FFFFFF !important;
+}
