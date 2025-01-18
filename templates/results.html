@@ -1,158 +1,420 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8" />
-  <title>Analysis Results</title>
-  <!-- Bootstrap 5 CSS -->
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-  />
-  <style>
-    body {
-      background-color: #f8f9fa;
-    }
-    h1, h2 {
-      margin-top: 1.5rem;
-    }
-    .table thead th {
-      background-color: #e9ecef; /* Slightly gray header */
-    }
-    .tag-badge {
-      background-color: #e2e3e5;
-      margin-right: 5px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.9rem;
-    }
-    .analyze-again-btn {
-      margin-top: 2rem;
-    }
-  </style>
-</head>
+{% extends "base.html" %}
+{% block title %}Analysis Results | InsightSphere{% endblock %}
 
-<body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">YouTube Emotion Analysis</a>
+{% block content %}
+<h1 class="text-center mb-5 text-primary">
+  <i class="fas fa-chart-pie"></i> Video Emotion & Engagement Analysis
+</h1>
+
+<!-- 1. YouTube Video Info -->
+<div class="card mb-4 shadow border-0">
+  <div class="card-header bg-primary text-white">
+    <h2 class="h5 mb-0">
+      <i class="fab fa-youtube"></i> YouTube Video Info
+    </h2>
+  </div>
+  <div class="card-body">
+    <p><strong>Title:</strong> {{ video_title }}</p>
+    <p>
+      <strong>Video Link:</strong>
+      <a
+        href="{{ video_link }}"
+        target="_blank"
+        class="text-decoration-none text-primary"
+      >
+        {{ video_link }}
+      </a>
+    </p>
+    <p><strong>Views:</strong> {{ total_views }}</p>
+    <p><strong>Likes:</strong> {{ total_likes }}</p>
+    <p><strong>Comments:</strong> {{ total_comments }}</p>
+    <p><strong>Subscribers:</strong> {{ total_subscribers }}</p>
+    <p><strong>Channel Name:</strong> {{ channel_name }}</p>
+    <p><strong>Upload Date:</strong> {{ upload_date }}</p>
+    <p>
+      <strong>Tags:</strong>
+      {% for tag in tags %}
+        <span class="badge bg-secondary me-1">{{ tag }}</span>
+      {% endfor %}
+    </p>
+  </div>
+</div>
+
+<!-- 2. Performance & Engagement -->
+<div class="card mb-4 shadow border-0">
+  <div class="card-header bg-primary text-white">
+    <h2 class="h5 mb-0">
+      <i class="fas fa-tachometer-alt"></i> Performance & Engagement
+    </h2>
+  </div>
+  <div class="card-body">
+    <!-- Metrics Table -->
+    <div class="table-responsive mb-4">
+      <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Metric</th>
+            <th>Value (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Likes vs Views</td>
+            <td>{{ likes_to_views_perc }}</td>
+          </tr>
+          <tr>
+            <td>Comments vs Views</td>
+            <td>{{ comments_to_views_perc }}</td>
+          </tr>
+          <tr>
+            <td>Views vs Subscribers</td>
+            <td>{{ views_to_subs_perc }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </nav>
 
-  <div class="container my-4">
-    <h1 class="text-center mb-4">Video Emotion Analysis</h1>
-    
-    <!-- Video Engagement & Metadata -->
-    <div class="card mb-4 shadow">
-      <div class="card-body">
-        <h2 class="h4">Video Engagement &amp; Metadata</h2>
-        <p><strong>Title:</strong> {{ video_title }}</p>
-        <p>
-          <strong>Video Link:</strong>
-          <a href="{{ video_link }}" target="_blank">{{ video_link }}</a>
-        </p>
-        <p><strong>Channel Name:</strong> {{ channel_name }}</p>
-        <p><strong>Upload Date:</strong> {{ upload_date }}</p>
-        <p><strong>Tags:</strong>
-          {% for tag in tags %}
-            <span class="tag-badge">{{ tag }}</span>
-          {% endfor %}
-        </p>
+    <!-- Bar Charts Row -->
+    <div class="row">
+      <!-- Likes vs Views -->
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h2 class="h6 text-center text-primary fw-bold">Likes vs Views</h2>
+            <canvas id="likesViewsBarChart"></canvas>
+          </div>
+        </div>
+      </div>
 
-        <div class="table-responsive">
-          <table class="table table-bordered align-middle">
-            <thead>
-              <tr>
-                <th>Metric</th>
-                <th>Value (%)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Likes vs Views</td>
-                <td>{{ likes_to_views_perc }}</td>
-              </tr>
-              <tr>
-                <td>Comments vs Views</td>
-                <td>{{ comments_to_views_perc }}</td>
-              </tr>
-              <tr>
-                <td>Views vs Subscribers</td>
-                <td>{{ views_to_subs_perc }}</td>
-              </tr>
-            </tbody>
-          </table>
+      <!-- Comments vs Views -->
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h2 class="h6 text-center text-primary fw-bold">Comments vs Views</h2>
+            <canvas id="commentsViewsBarChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Views vs Subscribers -->
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h2 class="h6 text-center text-primary fw-bold">Views vs Subscribers</h2>
+            <canvas id="viewsSubsBarChart"></canvas>
+          </div>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- Overall Video Summary -->
-    <div class="card mb-4 shadow">
-      <div class="card-body">
-        <h2 class="h4">Overall Video Summary</h2>
-        {% if video_summary %}
-          <p>{{ video_summary }}</p>
-        {% else %}
-          <p><em>No summary available</em></p>
-        {% endif %}
+<!-- 3. Comment-Level Emotions -->
+{% set emotion_class_map = {
+  "Joy": "emotion-joy",
+  "Anger": "emotion-anger",
+  "Sadness": "emotion-sadness",
+  "Fear": "emotion-fear",
+  "Surprise": "emotion-surprise",
+  "Love": "emotion-love"
+} %}
+<div class="card mb-4 shadow border-0">
+  <div class="card-header bg-primary text-white">
+    <h2 class="h5 mb-0">
+      <i class="fas fa-comments"></i> Comment-Level Emotions
+    </h2>
+  </div>
+  <div class="card-body">
+    {% if report_data and report_data|length > 0 %}
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Comment</th>
+              <th>Top Emotion</th>
+              <th>Confidence</th>
+              <th>Sentiment</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in report_data %}
+              {% set row_emotion = row.comment_emotion1 %}
+              {% set row_class = emotion_class_map.get(row_emotion, "emotion-default") %}
+              <tr class="{{ row_class }}">
+                <td>{{ row.comment }}</td>
+                <td>{{ row.comment_emotion1 }}</td>
+                <td>{{ row.comment_conf1 | round(3) }}</td>
+                <td>{{ row.sentiment }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
-    </div>
+    {% else %}
+      <p class="text-muted">No comment data to display.</p>
+    {% endif %}
+  </div>
+</div>
 
-    <!-- Comment-based Emotions -->
-    <div class="card mb-4 shadow">
-      <div class="card-body">
-        <h2 class="h4">Comment-Level Emotions</h2>
-        {% if report_data and report_data|length > 0 %}
-          <div class="table-responsive">
-            <table class="table table-striped table-bordered align-middle">
-              <thead>
-                <tr>
-                  <th>Comment</th>
-                  <th>Top Emotion</th>
-                  <th>Confidence</th>
-                  <th>Sentiment</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for row in report_data %}
-                  <tr>
-                    <td>{{ row.comment }}</td>
-                    <td>{{ row.comment_emotion1 }}</td>
-                    <td>{{ row.comment_conf1 | round(3) }}</td>
-                    <td>{{ row.sentiment }}</td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        {% else %}
-          <p>No comment data to display.</p>
-        {% endif %}
+<!-- 4. Pie Charts: Sentiment & Emotion Distribution -->
+<div class="row">
+  <!-- Pie Chart: Sentiment Distribution -->
+  <div class="col-md-6 mb-4">
+    <div class="card shadow border-0">
+      <div class="card-header bg-primary text-white">
+        <h2 class="h6 mb-0">
+          <i class="fas fa-smile"></i> Sentiment Distribution
+        </h2>
       </div>
-    </div>
-
-    <!-- Overall Public Opinion -->
-    <div class="card mb-4 shadow">
       <div class="card-body">
-        <h2 class="h4">Overall Public Opinion</h2>
-        <p>
-          <strong>Overall Sentiment:</strong> {{ overall_sentiment }}<br />
-          <strong>Overall Emotion:</strong> {{ overall_emotion }}
-        </p>
+        <canvas id="sentimentPieChart"></canvas>
       </div>
-    </div>
-
-    <!-- Button: Analyze Another Video -->
-    <div class="text-center analyze-again-btn">
-      <a href="/" class="btn btn-secondary btn-lg">
-        Analyze Another Video
-      </a>
     </div>
   </div>
 
-  <!-- Bootstrap JS (optional, for interactive components) -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-  ></script>
-</body>
-</html>
+  <!-- Pie Chart: Emotion Distribution -->
+  <div class="col-md-6 mb-4">
+    <div class="card shadow border-0">
+      <div class="card-header bg-primary text-white">
+        <h2 class="h6 mb-0">
+          <i class="fas fa-heart"></i> Emotion Distribution
+        </h2>
+      </div>
+      <div class="card-body">
+        <canvas id="emotionPieChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 5. Overall Public Opinion -->
+<div class="card mb-4 shadow border-0">
+  <div class="card-header bg-primary text-white">
+    <h2 class="h5 mb-0">
+      <i class="fas fa-globe"></i> Overall Public Opinion
+    </h2>
+  </div>
+  <div class="card-body">
+    <p>
+      <strong>Overall Sentiment:</strong> {{ overall_sentiment }}<br />
+      <strong>Overall Emotion:</strong> {{ overall_emotion }}
+    </p>
+  </div>
+</div>
+
+<!-- 6. Button: Analyze Another Video -->
+<div class="text-center mb-5">
+  <a href="/" class="btn btn-outline-primary btn-lg">
+    <i class="fas fa-arrow-left"></i> Analyze Another Video
+  </a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  /************************************************************
+   * 0. Data from Flask
+   ************************************************************/
+  const sentimentDistribution = JSON.parse('{{ sentiment_distribution | tojson | safe }}');
+  const emotionDistribution = JSON.parse('{{ emotion_distribution | tojson | safe }}');
+
+  const likesViewsPerc = parseFloat('{{ likes_to_views_perc | safe }}');
+  const commentsViewsPerc = parseFloat('{{ comments_to_views_perc | safe }}');
+  const viewsSubsPerc = parseFloat('{{ views_to_subs_perc | safe }}');
+
+  /************************************************************
+   * Helper: getPerformanceColor
+   ************************************************************/
+  function getPerformanceColor(value, goodMin, goodMax) {
+    if (value < goodMin) return "#f44336"; // under-performing => red
+    if (value > goodMax) return "#ff9800"; // over-performing => orange
+    return "#4caf50";                      // good => green
+  }
+
+  /************************************************************
+   * 1. Bar Charts
+   ************************************************************/
+  // Likes vs Views
+  const likesViewsData = [
+    { label: "Benchmark", value: 1, color: "#E0E0E0" },
+    {
+      label: "Video",
+      value: likesViewsPerc,
+      color: getPerformanceColor(likesViewsPerc, 1, 5),
+    },
+  ];
+  new Chart(document.getElementById("likesViewsBarChart"), {
+    type: "bar",
+    data: {
+      labels: likesViewsData.map(d => d.label),
+      datasets: [
+        {
+          label: "Likes/Views (%)",
+          data: likesViewsData.map(d => d.value),
+          backgroundColor: likesViewsData.map(d => d.color),
+        },
+      ],
+    },
+    options: {
+      scales: { y: { beginAtZero: true, max: 10 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ctx.parsed.y + "%",
+          },
+        },
+      },
+      responsive: true,
+    },
+  });
+
+  // Comments vs Views
+  const commentsViewsData = [
+    { label: "Benchmark", value: 0.5, color: "#E0E0E0" },
+    {
+      label: "Video",
+      value: commentsViewsPerc,
+      color: getPerformanceColor(commentsViewsPerc, 0.5, 0.5),
+    },
+  ];
+  new Chart(document.getElementById("commentsViewsBarChart"), {
+    type: "bar",
+    data: {
+      labels: commentsViewsData.map(d => d.label),
+      datasets: [
+        {
+          label: "Comments/Views (%)",
+          data: commentsViewsData.map(d => d.value),
+          backgroundColor: commentsViewsData.map(d => d.color),
+        },
+      ],
+    },
+    options: {
+      scales: { y: { beginAtZero: true, max: 1 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ctx.parsed.y + "%",
+          },
+        },
+      },
+      responsive: true,
+    },
+  });
+
+  // Views vs Subscribers
+  const viewsSubsData = [
+    { label: "Benchmark", value: 10, color: "#E0E0E0" },
+    {
+      label: "Video",
+      value: viewsSubsPerc,
+      color: getPerformanceColor(viewsSubsPerc, 10, 20),
+    },
+  ];
+  new Chart(document.getElementById("viewsSubsBarChart"), {
+    type: "bar",
+    data: {
+      labels: viewsSubsData.map(d => d.label),
+      datasets: [
+        {
+          label: "Views/Subscribers (%)",
+          data: viewsSubsData.map(d => d.value),
+          backgroundColor: viewsSubsData.map(d => d.color),
+        },
+      ],
+    },
+    options: {
+      scales: { y: { beginAtZero: true, max: 100 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ctx.parsed.y + "%",
+          },
+        },
+      },
+      responsive: true,
+    },
+  });
+
+  /************************************************************
+   * 2. Pie Charts: Sentiment & Emotion Distribution
+   ************************************************************/
+  // Sentiment Distribution
+  const sentimentLabels = Object.keys(sentimentDistribution);
+  const sentimentData = Object.values(sentimentDistribution);
+  const sentimentColors = {
+    Positive: "#4caf50",
+    Negative: "#f44336",
+    Neutral:  "#9e9e9e",
+  };
+  const sentimentBackgrounds = sentimentLabels.map(
+    label => sentimentColors[label] || "#BDC3C7"
+  );
+
+  new Chart(document.getElementById("sentimentPieChart"), {
+    type: "pie",
+    data: {
+      labels: sentimentLabels,
+      datasets: [
+        {
+          data: sentimentData,
+          backgroundColor: sentimentBackgrounds,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: "bottom" },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.label}: ${ctx.parsed}%`,
+          },
+        },
+      },
+    },
+  });
+
+  // Emotion Distribution
+  const emotionLabels = Object.keys(emotionDistribution);
+  const emotionDataArr = Object.values(emotionDistribution);
+  const emotionColorMap = {
+    Joy:      "#fff176", // pastel yellow
+    Anger:    "#ff8a80", // pastel red
+    Sadness:  "#90caf9", // pastel blue
+    Fear:     "#ce93d8", // pastel purple
+    Surprise: "#ffb74d", // pastel orange
+    Love:     "#f48fb1", // pastel pink
+  };
+  const emotionBackgrounds = emotionLabels.map(
+    label => emotionColorMap[label] || "#D3D3D3"
+  );
+
+  new Chart(document.getElementById("emotionPieChart"), {
+    type: "pie",
+    data: {
+      labels: emotionLabels,
+      datasets: [
+        {
+          data: emotionDataArr,
+          backgroundColor: emotionBackgrounds,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: "bottom" },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.label}: ${ctx.parsed}%`,
+          },
+        },
+      },
+    },
+  });
+</script>
+{% endblock %}
