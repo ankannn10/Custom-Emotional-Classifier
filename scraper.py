@@ -12,6 +12,9 @@ from youtube_comment_downloader import YoutubeCommentDownloader, SORT_BY_POPULAR
 from webdriver_manager.chrome import ChromeDriverManager
 
 def setup_driver():
+    """
+    Sets up the Chrome WebDriver with necessary options.
+    """
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
@@ -22,6 +25,9 @@ def setup_driver():
     return driver
 
 def scrape_title(driver):
+    """
+    Scrapes the video title from the YouTube page.
+    """
     try:
         title_element = driver.find_element(By.CSS_SELECTOR, '#title yt-formatted-string')
         return title_element.text
@@ -30,6 +36,9 @@ def scrape_title(driver):
         return None
 
 def scrape_comment_count(driver):
+    """
+    Scrapes the comment count from the YouTube page.
+    """
     try:
         driver.execute_script("window.scrollBy(0, 600);")
         time.sleep(2)
@@ -43,6 +52,9 @@ def scrape_comment_count(driver):
         return None
 
 def expand_description_box(driver):
+    """
+    Expands the description box on the YouTube page if it's collapsible.
+    """
     try:
         show_more = driver.find_element(By.CSS_SELECTOR, 'tp-yt-paper-button#expand')
         driver.execute_script("arguments[0].click();", show_more)
@@ -51,6 +63,9 @@ def expand_description_box(driver):
         print("No 'Show more' button found or already expanded.")
 
 def scrape_views_date_tags(driver):
+    """
+    Scrapes the views, upload date, and tags from the YouTube page.
+    """
     try:
         info_element = driver.find_element(By.CSS_SELECTOR, 'yt-formatted-string#info')
         views_match = re.search(r'([\d,\.]+)\sviews', info_element.text)
@@ -58,12 +73,17 @@ def scrape_views_date_tags(driver):
         date_match = re.search(r'(\d{1,2}\s\w+\s\d{4}|\w+\s\d{1,2},\s\d{4})', info_element.text)
         upload_date = date_match.group(1) if date_match else None
         tags = [tag.text.lstrip('#') for tag in info_element.find_elements(By.CSS_SELECTOR, 'a.yt-simple-endpoint')]
+        if not tags:
+            tags = ["No tags found"]
         return views_count, upload_date, tags
     except Exception as e:
         print("Error scraping views, upload date, or tags:", e)
         return None, None, []
 
 def scrape_likes(driver):
+    """
+    Scrapes the number of likes from the YouTube page.
+    """
     try:
         like_button = driver.find_element(By.CSS_SELECTOR, 'button[aria-label*="like this video"]')
         likes_text = like_button.get_attribute("aria-label")
@@ -74,6 +94,9 @@ def scrape_likes(driver):
         return None
 
 def scrape_channel_info(driver):
+    """
+    Scrapes channel name and subscriber count from the YouTube page.
+    """
     try:
         channel_name_element = driver.find_element(By.CSS_SELECTOR, '#channel-name #text')
         channel_name = channel_name_element.text.strip()
@@ -91,6 +114,9 @@ def scrape_channel_info(driver):
         return None, None
 
 def scrape_transcript(driver):
+    """
+    Scrapes the transcript from the YouTube page if available.
+    """
     try:
         transcript_button = driver.find_element(By.XPATH, '//*[@id="primary-button"]/ytd-button-renderer/yt-button-shape/button')
         transcript_button.click()
@@ -114,23 +140,33 @@ def scrape_transcript(driver):
 
 class ScraperComments:
     def __init__(self, url, sort_by=SORT_BY_POPULAR, comment_limit=20):
+        """
+        Initializes the ScraperComments class with the video URL, sorting method, and comment limit.
+        """
         self.url = url
         self.sort_by = sort_by
         self.comment_limit = comment_limit
         self.comments = []
 
     def get_comments(self):
+        """
+        Fetches comments using the YoutubeCommentDownloader library.
+        """
         downloader = YoutubeCommentDownloader()
         comments = downloader.get_comments_from_url(self.url, sort_by=self.sort_by)
-        # Collect only the comment text for each comment
         self.comments = [comment['text'] for comment in islice(comments, self.comment_limit)]
 
     def scrape_and_save_comments(self):
+        """
+        Scrapes comments and returns them as a list.
+        """
         self.get_comments()
         return self.comments
 
-
 def save_data_to_json(data, filename="data.json"):
+    """
+    Saves the scraped data to a JSON file.
+    """
     with open(filename, "w", encoding="utf-8") as json_file:
         json.dump(data, json_file, ensure_ascii=False, indent=4)
     print(f"Data saved to {filename}")
@@ -166,7 +202,9 @@ if __name__ == "__main__":
     save_data_to_json(data)
 
 def scrape_video_data(url, driver):
-    """Scrapes all video data given a URL."""
+    """
+    Scrapes all video data given a URL.
+    """
     try:
         driver.get(url)
         time.sleep(5)
