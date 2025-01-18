@@ -5,7 +5,9 @@ import re
 import argparse
 import pandas as pd
 import emoji
-import re
+import os
+from typing import List, Optional
+
 
 # Slang Dictionary
 SLANG_DICT = {
@@ -108,116 +110,140 @@ SLANG_DICT = {
     "vibe": "atmosphere or mood"
 }
 
-# Preprocessing Function
-def preprocess_text(text):
-    text = emoji.demojize(text)
-    text = text.lower()
+
+def preprocess_text(text: str) -> str:
+    """
+    Preprocesses text by replacing emojis and slang terms with their meanings.
+    
+    Args:
+        text (str): The input text to preprocess.
+    
+    Returns:
+        str: The cleaned and preprocessed text.
+    """
+    text = emoji.demojize(text).lower()
     
     for slang, replacement in SLANG_DICT.items():
-        text = re.sub(r'\b' + re.escape(slang) + r'\b', replacement, text)
+        text = re.sub(rf'\b{re.escape(slang)}\b', replacement, text)
     
-    #Remove Unwanted Characters (Keep emoji tokens intact)
-    text = re.sub(r'[^a-zA-Z0-9\s:]', '', text)
-    
-    # Remove extra spaces
-    text = re.sub(r'\s+', ' ', text).strip()
-    
+    text = re.sub(r'[^a-zA-Z0-9\s:]', '', text)  # Remove unwanted characters
+    text = re.sub(r'\s+', ' ', text).strip()  # Remove extra spaces
     return text
 
 
-# Clean Comment Function
-def clean_comment(comment):
+def clean_comment(comment: str) -> Optional[str]:
+    """
+    Cleans a single comment by removing unwanted characters and preprocessing slang.
+    
+    Args:
+        comment (str): The comment to clean.
+    
+    Returns:
+        Optional[str]: The cleaned comment or None if invalid.
+    """
     if not comment:
         return None
-        
+
     comment = re.sub(r'\r\n|\n', ' ', comment)  # Replace newlines with space
     comment = re.sub(r'\s+', ' ', comment).strip()  # Remove excessive spaces
-    
-    if re.match(r'^\s*@', comment):
-        return None  # Skip comments starting with '@'
-    
-    comment = re.sub(r'http\S+|www.\S+', '', comment)  # Remove URLs
-    
-    # Preprocess with emoji and slang replacement
+
+    if re.match(r'^\s*@', comment):  # Skip comments starting with '@'
+        return None
+
+    comment = re.sub(r'http\S+|www\.\S+', '', comment)  # Remove URLs
     comment = preprocess_text(comment)
-    
-    # Final cleanup
-    comment = re.sub(r'\s+', ' ', comment).strip()
-    
     return comment if comment else None
 
 
-
-def clean_transcript(transcript):
+def clean_transcript(transcript: str) -> str:
+    """
+    Cleans a transcript by removing timestamps and unwanted characters.
+    
+    Args:
+        transcript (str): The transcript to clean.
+    
+    Returns:
+        str: The cleaned transcript.
+    """
     if not transcript:
         return ""
-    
+
     transcript = re.sub(r'\[.*?\]', '', transcript)  # Remove bracketed content
     transcript = re.sub(r'\[\d{2}:\d{2}\]', '', transcript)  # Remove timestamps
     transcript = re.sub(r'\r\n|\n', ' ', transcript)  # Replace newlines with spaces
     transcript = re.sub(r'\s+', ' ', transcript)  # Remove multiple spaces
     transcript = re.sub(r'[^\w\s.,!?-]', '', transcript)  # Remove unwanted characters
-    
     return transcript.strip()
 
 
-def chunk_text(text, max_length=64, overlap=16):
+def chunk_text(text: str, max_length: int = 64, overlap: int = 16) -> List[str]:
+    """
+    Splits text into overlapping chunks.
+    
+    Args:
+        text (str): The text to split into chunks.
+        max_length (int): The maximum length of each chunk.
+        overlap (int): The number of overlapping words between chunks.
+    
+    Returns:
+        List[str]: A list of text chunks.
+    """
     words = text.split()
     chunks = []
-    
-    if not words:
-        return chunks
-        
+
     for i in range(0, len(words), max_length - overlap):
         chunk = " ".join(words[i:i + max_length])
-        if chunk:
-            chunks.append(chunk)
+        chunks.append(chunk)
     return chunks
 
 
-def process_cleaning(input_file, output_file, max_chunk_length=64, chunk_overlap=16):
+def process_cleaning(input_file: str, output_file: str, max_chunk_length: int = 64, chunk_overlap: int = 16) -> Optional[str]:
+    """
+    Processes the input JSON file to clean transcript and comments and pairs them.
+    
+    Args:
+        input_file (str): Path to the input JSON file.
+        output_file (str): Path to the output CSV file.
+        max_chunk_length (int): Maximum length of each transcript chunk.
+        chunk_overlap (int): Overlap between transcript chunks.
+    
+    Returns:
+        Optional[str]: Path to the output file if successful, None otherwise.
+    """
     try:
-        # Read JSON file
         with open(input_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
-        
-        # Clean transcript
+
         transcript = clean_transcript(data.get('transcript', ''))
         if not transcript:
             raise ValueError("No valid transcript found in the file")
-        
-        # Clean comments
+
         comments = data.get('comments', [])
         cleaned_comments = [clean_comment(comment) for comment in comments if clean_comment(comment)]
-        
         if not cleaned_comments:
             raise ValueError("No valid comments found in the file")
-        
-        # Create chunks from transcript
+
         chunks = chunk_text(transcript, max_length=max_chunk_length, overlap=chunk_overlap)
-        # Save transcript chunks to chunks.csv
-        chunks_df = pd.DataFrame({
-            'chunk_index': range(1, len(chunks) + 1),
-            'Transcript Chunk': chunks
-        })
-        chunks_df.to_csv('output/chunks.csv', index=False)
-        print(f"Saved {len(chunks)} transcript chunks to output2/chunks.csv")
         if not chunks:
             raise ValueError("Transcript could not be chunked into meaningful parts")
-        
-        # Create pairs
+
+        os.makedirs(os.path.dirname(output_file), exist_ok=True)
+
+        # Save transcript chunks
+        chunks_df = pd.DataFrame({'chunk_index': range(1, len(chunks) + 1), 'Transcript Chunk': chunks})
+        chunks_df.to_csv('output/chunks.csv', index=False)
+        print(f"Saved {len(chunks)} transcript chunks to output/chunks.csv")
+
         pairs = list(product(chunks, cleaned_comments))
-        
-        # Save to CSV
         with open(output_file, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             writer.writerow(["Transcript Chunk", "Comment"])
             writer.writerows(pairs)
-        
+
         print(f"Processing complete! Generated {len(pairs)} pairs.")
         print(f"Output saved to {output_file}")
         return output_file
-    
+
     except Exception as e:
         print(f"Error processing file: {str(e)}")
         return None
@@ -229,9 +255,9 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=str, required=True, help="Path to the output CSV file.")
     parser.add_argument("--chunk_length", type=int, default=64, help="Maximum length of each transcript chunk.")
     parser.add_argument("--chunk_overlap", type=int, default=16, help="Overlap between transcript chunks.")
-    
+
     args = parser.parse_args()
-    
+
     process_cleaning(
         input_file=args.input,
         output_file=args.output,
