@@ -33,10 +33,14 @@ YouTube Emotion Analysis is a comprehensive pipeline designed to extract, proces
 ├── inference.py          # Emotion classification
 ├── ces.py                # CES and WRS calculation
 ├── templates/
-│   ├── index.html        # Input form for video link
-│   ├── results.html      # Display results
+│   ├── base.html         # base html architecture 
+│   ├── signup.html       # Sign up page
+│   ├── login.html        # Input form for video link
+│   ├── index.html        # Home Page
+│   ├── results.html      # Display results page
 ├── static/
 │   ├── emotion_model_architecture.png  # Model architecture diagram
+    ├── styles.css
 └── requirements.txt      # Dependencies
 ```
 
