@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Sign Up | InsightSphere{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card shadow border-0">
+      <div class="card-body">
+        <h4 class="card-title text-primary text-center mb-4">
+          <i class="fas fa-user-plus"></i> Create an Account
+        </h4>
+
+        {% if error %}
+          <div class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
+        {% endif %}
+
+        <form method="POST">
+          <!-- Username -->
+          <div class="mb-3">
+            <label for="username" class="form-label fw-semibold">Username</label>
+            <input
+              type="text"
+              name="username"
+              class="form-control"
+              id="username"
+              placeholder="Choose a username"
+              required
+            />
+          </div>
+
+          <!-- Password -->
+          <div class="mb-3">
+            <label for="password" class="form-label fw-semibold">Password</label>
+            <input
+              type="password"
+              name="password"
+              class="form-control"
+              id="password"
+              placeholder="Create a secure password"
+              required
+            />
+          </div>
+
+          <!-- Submit Button -->
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg">
+              <i class="fas fa-user-check"></i> Sign Up
+            </button>
+          </div>
+        </form>
+
+        <!-- Login Prompt -->
+        <p class="mt-3 text-center">
+          Already have an account?
+          <a
+            href="{{ url_for('login') }}"
+            class="text-decoration-none text-primary fw-bold"
+          >
+            Login here
+          </a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
